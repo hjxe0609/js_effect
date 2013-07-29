@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script type="text/javascript" src="../demo/js/jquery-1.4.1.min.js"></script>
+<style type="text/css">
+
+.container2{
+	width:598px;
+	border:1px solid #ccc;
+	height:100px;
+	margin:20px auto;
+	overflow:hidden;
+	position:relative;
+}
+.press{
+	line-height:100px;
+	white-space:nowrap;
+	position:absolute;
+	left:0px;
+	top:0px;
+	cursor:pointer;
+}
+.dragbar{
+	position:relative;
+	height:20px;
+	width:600px;
+	background:#ddd;
+	margin:0 auto;
+}
+.draghandle{
+	height:18px;
+	width:28px;
+	border:1px solid #444;
+	overflow:hidden;
+	background:#666;
+	position:absolute;
+	top:0px;
+	left:0px;
+	cursor:move;
+}
+</style>
+</head>
+
+<body>
+<div class="container2">
+	<div class="press">判断滚轮向上或向下在浏览器中也要考虑兼容性，现在五大浏览器（IE、Opera、Safari、Firefox、Chrome）判断滚轮向上或向下在浏览器中也要考虑兼容性，现在五大浏览器
+    <img src="view_comp.gif" />
+    </div>
+</div>
+<div class="dragbar">
+	<div class="draghandle"></div>
+</div>
+<br />
+<span>Info</span>
+<script type="text/javascript">
+$(function(){
+	var mover=$(".press");
+	var container2=$(".container2");
+	var w=container2.width();
+	var c=mover.width();
+	var handle=$(".draghandle");
+	var dragbar=$(".dragbar");
+	var maxlen=parseInt(dragbar.width())-parseInt(handle.outerWidth());
+	handle.bind("mousedown",function(e){
+		var x=e.pageX;
+		var hx=parseInt(handle.css("left"));
+		$(document).bind("mousemove",function(e){
+			var left=e.pageX-x+hx<0?0:(e.pageX-x+hx>=maxlen?maxlen:e.pageX-x+hx);
+			$("span").text("handleleft:"+handle.css("left")+" == X:"+x+" == PageX:"+e.pageX);
+			handle.css({
+				left:left
+			});
+			mover.animate({
+				left:-left/maxlen*(c-w)			
+			},{duration:800 , queue:false});
+			//$("span").text((left/maxlen*100).toFixed(0)+"%");
+			return true;
+		});
+		$(document).bind("mouseup",function(){
+			$(this).unbind("mousemove");
+		})
+	})
+	
+	document.oncontextmenu=function(){return false;}
+	document.ondragstart=function(){return false;}
+	document.onselectstart=function(){return false;}
+});
+</script>
+</body>
+</html>

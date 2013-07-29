@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<script type="text/javascript" src="../demo/js/jquery-1.4.1.min.js"></script>
+<style type="text/css">
+body{
+	text-align:center;
+	margin:0;
+	font-family:Arial, Helvetica, sans-serif;
+}
+.container{
+	width:598px;
+	border:1px solid #ccc;
+	height:100px;
+	margin:20px auto;
+	overflow:hidden;
+	position:relative;
+}
+.press{
+	line-height:100px;
+	white-space:nowrap;
+	position:absolute;
+	left:0px;
+	top:0px;
+	cursor:w-resize;
+}
+.dragbar{
+	position:relative;
+	height:20px;
+	background:#ddd;
+	margin:0 auto;
+}
+.draghandle{
+	height:18px;
+	width:28px;
+	border:1px solid #444;
+	overflow:hidden;
+	background:#666;
+	position:absolute;
+	top:0px;
+	left:0px;
+	cursor:default;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+	<div class="press">判断滚轮向上或向下在浏览器中也要考虑兼容性，现在五大浏览器（IE、Opera、Safari、Firefox、Chrome）判断滚轮向上或向下在浏览器中也要考虑兼容性，现在五大浏览器,判断滚轮向上或向下在浏览器中也要考虑兼容性，现在五大浏览器（IE、Opera、Safari、Firefox、Chrome）判断滚轮向上或向下在浏览器中也要考虑兼容性，现在五大浏览器</div>
+</div>
+<div class="dragbar">
+	<div class="draghandle"></div>
+</div>
+<br />
+<span>Info</span>
+<script type="text/javascript">
+jQuery.extend(jQuery.easing,{
+	easeOutQuint: function (x, t, b, c, d) {
+		return c*((t=t/d-1)*t*t*t*t + 1) + b;
+	}
+});
+$(function(){
+	var mover=$(".press");
+	var container=$(".container");
+	var w=container.width();
+	var c=mover.width();
+	var handle=$(".draghandle");
+	var dragbar=$(".dragbar");
+	dragbar.css("width",container.outerWidth());
+	handle.css("width",(w/c)*w);
+	var maxlen=parseInt(dragbar.width())-parseInt(handle.outerWidth());
+	handle.bind("mousedown",function(e){
+		var x=e.pageX;
+		var hx=parseInt(handle.css("left"));
+		$(document).bind("mousemove",function(e){
+			var left=e.pageX-x+hx<0?0:(e.pageX-x+hx>=maxlen?maxlen:e.pageX-x+hx);
+			handle.css({
+				left:left
+			});
+			mover.animate({
+				left:-left/maxlen*(c-w)			
+			},{duration:1500,easing:'easeOutQuint' , queue:false});
+			$("span").text((left/maxlen*100).toFixed(0)+"%");//******
+			return false;
+		});
+		$(document).bind("mouseup",function(){
+			$(this).unbind("mousemove");
+		})
+	})
+	
+	function move(x,nx){
+		var left=parseInt(mover.css("left"))+((nx-x)/w)*(c-w);
+		left=left.toFixed(0);
+		left=left>0?0:left<w-c?w-c:left;
+		mover.animate({
+			left:left			
+		},{duration:1500, queue:false});
+		var handle_left=(left/(w-c))*maxlen;
+		handle.animate({
+			left:handle_left			
+		},{duration:1500 , queue:false});
+		$("span").text((handle_left/maxlen*100).toFixed(0)+"%");//******
+	}
+	container.bind("mousedown",function(e){
+		var x=e.pageX;
+		$(this).bind("mousemove",function(e){
+			move(x,e.pageX);
+			return false;
+		})
+		$(document).bind("mouseup",function(){
+			container.unbind("mousemove");
+		})
+	})
+	
+	//还需增加点击滚动条滑动到相应位置效果；鼠标拖动时mover应该也跟着动。
+	
+	//document.ondragstart=function(){return false;}
+	document.onselectstart=function(){return false;}
+});
+</script>
+</body>
+</html>
